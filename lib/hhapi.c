@@ -4,7 +4,6 @@
 char *hhapi_get_request(const char *url)
 {
 	gchar *responce;
-
 	SoupSession *session;
 	SoupMessage *msg;
 
@@ -16,4 +15,9 @@ char *hhapi_get_request(const char *url)
 	g_object_unref(msg);
 	g_object_unref(session);
 	return responce;
+}
+
+char *hhapi_parse_json(const char *json)
+{
+	return g_strdup(json);
 }

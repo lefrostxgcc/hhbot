@@ -5,10 +5,12 @@
 enum {SPACING = 10, WINDOW_WIDTH = 400, WINDOW_HEIGHT = 300};
 
 static void on_button_test_clicked(GtkWidget *button, gpointer data);
+static void on_button_parse_clicked(GtkWidget *button, gpointer data);
 
 int main(int argc, char *argv[])
 {
 	GtkWidget *window, *label_json_request, *json_scrolls, *button_test;
+	GtkWidget *button_parse;
 	GtkWidget *vbox, *hbox;
 
     gtk_init (&argc, &argv);
@@ -25,11 +27,13 @@ int main(int argc, char *argv[])
 	gtk_container_add(GTK_CONTAINER(json_scrolls), label_json_request);
 
 	button_test = gtk_button_new_with_label("Тест");
+	button_parse = gtk_button_new_with_label("Парсинг");
 
 	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, SPACING);
 	hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, SPACING);
 
 	gtk_box_pack_start(GTK_BOX(hbox), button_test, TRUE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox), button_parse, TRUE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(vbox), json_scrolls, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 	
@@ -37,6 +41,10 @@ int main(int argc, char *argv[])
 
 	g_signal_connect(G_OBJECT(button_test), "clicked",
 						G_CALLBACK(on_button_test_clicked),
+						(gpointer)label_json_request);
+
+	g_signal_connect(G_OBJECT(button_parse), "clicked",
+						G_CALLBACK(on_button_parse_clicked),
 						(gpointer)label_json_request);
 
 	g_signal_connect(G_OBJECT(window), "destroy",
@@ -55,5 +63,16 @@ static void on_button_test_clicked(GtkWidget *button, gpointer data)
 
 	json_request = hhapi_get_request("http://api.hh.ru/vacancies/27562280");
 	gtk_label_set_text(GTK_LABEL(data), json_request);
+	g_free(json_request);
+}
+
+static void on_button_parse_clicked(GtkWidget *button, gpointer data)
+{
+	gchar *json_request, *json_parse;
+
+	json_request = hhapi_get_request("http://api.hh.ru/vacancies/27562280");
+	json_parse = hhapi_parse_json(json_request);
+	gtk_label_set_text(GTK_LABEL(data), json_parse);
+	g_free(json_parse);
 	g_free(json_request);
 }

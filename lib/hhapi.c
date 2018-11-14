@@ -1,4 +1,5 @@
 #include <libsoup/soup.h>
+#include <json-glib/json-glib.h>
 #include "hhapi.h"
 
 char *hhapi_get_request(const char *url)

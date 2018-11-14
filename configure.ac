@@ -18,8 +18,7 @@ AC_PROG_INSTALL
 # Checks for libraries.
 PKG_CHECK_MODULES([PKGGTK], [gtk+-3.0])
 PKG_CHECK_MODULES([LIBSOUP], [libsoup-2.4 >= 2.26])
-#AC_SUBST(LIBSOUP_CFLAGS)
-#AC_SUBST(LIBSOUP_LIBS)
+PKG_CHECK_MODULES([LIBJSON], [json-glib-1.0])
 
 # Checks for typedefs, structures, and compiler characteristics.
 

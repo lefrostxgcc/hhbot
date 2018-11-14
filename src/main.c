@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
 	gtk_window_set_default_size(GTK_WINDOW(window), WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	json_text_view = gtk_text_view_new();
+	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(json_text_view), GTK_WRAP_WORD);
 	json_text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(json_text_view));
 	json_scrolls = gtk_scrolled_window_new(NULL, NULL);
 	gtk_container_add(GTK_CONTAINER(json_scrolls), json_text_view);
@@ -51,4 +52,8 @@ int main(int argc, char *argv[])
 
 static void on_button_test_clicked(GtkWidget *button, gpointer data)
 {
+	const gchar *json_request;
+
+	json_request = hhapi_get_request("http://api.hh.ru/vacancies/27562280");
+	gtk_text_buffer_set_text(json_text_buffer, json_request, -1);
 }

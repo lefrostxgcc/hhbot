@@ -59,20 +59,20 @@ int main(int argc, char *argv[])
 
 static void on_button_test_clicked(GtkWidget *button, gpointer data)
 {
-	gchar *json_request;
+	const gchar *json_request;
 
 	json_request = hhapi_get_request("http://api.hh.ru/vacancies/27562280");
 	gtk_label_set_text(GTK_LABEL(data), json_request);
-	g_free(json_request);
+	g_free((gpointer)json_request);
 }
 
 static void on_button_parse_clicked(GtkWidget *button, gpointer data)
 {
-	gchar *json_request, *json_parse;
+	const gchar *json_request, *json_parse;
 
-	json_request = hhapi_get_request("http://api.hh.ru/vacancies/27562280");
-	json_parse = hhapi_parse_json(json_request);
+	json_request = hhapi_get_request("http://api.hh.ru/vacancies?text=Программист");
+	json_parse = hhapi_parse_json_items(json_request);
 	gtk_label_set_text(GTK_LABEL(data), json_parse);
-	g_free(json_parse);
-	g_free(json_request);
+	g_free((gpointer)json_parse);
+	g_free((gpointer)json_request);
 }

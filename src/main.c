@@ -2,50 +2,52 @@
 #include <hhapi.h>
 
 #define	PROGRAM_TITLE	"HHBot"
-enum {SPACING = 10, WINDOW_WIDTH = 400, WINDOW_HEIGHT = 300};
+enum {SPACING = 10, WINDOW_WIDTH = 500, WINDOW_HEIGHT = 400};
+const gchar *headers[] = {
+	"ID", "Name", "Salary Min", "Salary Max", "Employer", "Address", "Info"
+};
 
-static void on_button_test_clicked(GtkWidget *button, gpointer data);
-static void on_button_parse_clicked(GtkWidget *button, gpointer data);
+static void setup_tree_view(GtkWidget *tree_view);
+static GtkListStore *store;
 
 int main(int argc, char *argv[])
 {
-	GtkWidget *window, *label_json_request, *json_scrolls, *button_test;
-	GtkWidget *button_parse;
-	GtkWidget *vbox, *hbox;
+	GtkWidget *window, *treeview_vacancies, *entry_search, *button_search;
+	GtkWidget *scrolled_win, *vbox, *hbox;
 
     gtk_init (&argc, &argv);
 
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title(GTK_WINDOW(window), PROGRAM_TITLE);
-	gtk_container_set_border_width(GTK_CONTAINER (window), SPACING);
+	gtk_container_set_border_width(GTK_CONTAINER(window), SPACING);
 	gtk_window_set_default_size(GTK_WINDOW(window), WINDOW_WIDTH, WINDOW_HEIGHT);
 
-	label_json_request = gtk_label_new(NULL);
-	gtk_label_set_selectable(GTK_LABEL(label_json_request), TRUE);
-	gtk_label_set_line_wrap(GTK_LABEL(label_json_request), TRUE);
-	json_scrolls = gtk_scrolled_window_new(NULL, NULL);
-	gtk_container_add(GTK_CONTAINER(json_scrolls), label_json_request);
+	treeview_vacancies = gtk_tree_view_new();
+	entry_search = gtk_entry_new();
+	button_search = gtk_button_new_with_label("Search");
 
-	button_test = gtk_button_new_with_label("Тест");
-	button_parse = gtk_button_new_with_label("Парсинг");
+	setup_tree_view(treeview_vacancies);
+
+	store = gtk_list_store_new(sizeof(headers)/sizeof(headers[0]),
+		G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
+		G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+
+	gtk_tree_view_set_model(GTK_TREE_VIEW(treeview_vacancies),
+		GTK_TREE_MODEL(store));
+	g_object_unref(store);
+
+	scrolled_win = gtk_scrolled_window_new(NULL, NULL);
+	gtk_container_add(GTK_CONTAINER(scrolled_win), treeview_vacancies);
 
 	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, SPACING);
 	hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, SPACING);
 
-	gtk_box_pack_start(GTK_BOX(hbox), button_test, TRUE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(hbox), button_parse, TRUE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(vbox), json_scrolls, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox), entry_search, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox), button_search, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox), scrolled_win, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 	
 	gtk_container_add(GTK_CONTAINER(window), vbox);
-
-	g_signal_connect(G_OBJECT(button_test), "clicked",
-						G_CALLBACK(on_button_test_clicked),
-						(gpointer)label_json_request);
-
-	g_signal_connect(G_OBJECT(button_parse), "clicked",
-						G_CALLBACK(on_button_parse_clicked),
-						(gpointer)label_json_request);
 
 	g_signal_connect(G_OBJECT(window), "destroy",
     				  G_CALLBACK(gtk_main_quit), NULL);
@@ -57,22 +59,21 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-static void on_button_test_clicked(GtkWidget *button, gpointer data)
+static void setup_tree_view(GtkWidget *tree_view)
 {
-	const gchar *json_request;
+	int i;
+	GtkTreeViewColumn *column;
+	GtkCellRenderer *render;
 
-	json_request = hhapi_get_request("http://api.hh.ru/vacancies/27562280");
-	gtk_label_set_text(GTK_LABEL(data), json_request);
-	g_free((gpointer)json_request);
+	for (i = 0; i < sizeof(headers)/sizeof(headers[0]); i++)
+	{
+		render = gtk_cell_renderer_text_new();
+		column = gtk_tree_view_column_new_with_attributes(headers[i],
+			render, "text", i, NULL);
+		gtk_tree_view_column_set_resizable(column, TRUE);
+		gtk_tree_view_column_set_min_width(column, 20);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), column);
+	}
 }
 
-static void on_button_parse_clicked(GtkWidget *button, gpointer data)
-{
-	const gchar *json_request, *json_parse;
-
-	json_request = hhapi_get_request("http://api.hh.ru/vacancies?text=Программист");
-	json_parse = hhapi_parse_json_items(json_request);
-	gtk_label_set_text(GTK_LABEL(data), json_parse);
-	g_free((gpointer)json_parse);
-	g_free((gpointer)json_request);
-}
+/*"http://api.hh.ru/vacancies?text=Программист"*/

@@ -1,0 +1,17 @@
+#button_search {
+	box-shadow: 0 0 5px 5px black;
+	margin: 10px;
+	font-family: monospace;
+}
+
+#entry_search {
+	box-shadow: 0 0 5px 5px black;
+	margin: 10px;
+	font-family: monospace;
+}
+
+#treeview_vacancies {
+	box-shadow: 0 0 5px 5px black;
+	margin: 10px;
+	font-family: monospace;
+}

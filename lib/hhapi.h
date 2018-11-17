@@ -19,7 +19,7 @@ struct VacancyArray
 };
 
 char				*hhapi_get_request(const char *url);
-struct VacancyArray	hhapi_get_vacancies(const char *json);
+struct VacancyArray	hhapi_parse_json_items(const char *json);
 void				hhapi_free_vacancies(struct VacancyArray *vacancies);
 
 #endif /* HHAPI_H */

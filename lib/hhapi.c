@@ -16,6 +16,7 @@ static struct Salary parse_salary(JsonObject *vacancy_object);
 static char *parse_address(JsonObject *vacancy_object);
 static char *parse_employer_name(JsonObject *vacancy_object);
 static void free_vacancy(struct Vacancy *vacancy);
+static char *parse_address_object(JsonObject *adress_object);
 
 char *hhapi_get_request(const char *url)
 {
@@ -33,7 +34,7 @@ char *hhapi_get_request(const char *url)
 	return responce;
 }
 
-struct VacancyArray hhapi_get_vacancies(const char *json)
+struct VacancyArray hhapi_parse_json_items(const char *json)
 {
 	JsonParser			*parser;
 	JsonObject			*root_object;
@@ -152,7 +153,7 @@ static char *parse_employer_name(JsonObject *vacancy_object)
 	}
 	else
 	{
-		employer_node = json_object_get_member(vacancy_object, "address");
+		employer_node = json_object_get_member(vacancy_object, "employer");
 		if (json_node_is_null(employer_node))
 		{
 			name = g_strdup("-");
@@ -169,9 +170,6 @@ static char *parse_employer_name(JsonObject *vacancy_object)
 static char *parse_address(JsonObject *vacancy_object)
 {
 	char			*address;
-	char			*city;
-	char			*street;
-	char			*building;
 	JsonNode		*address_node;
 	JsonObject		*address_object;
 
@@ -189,32 +187,47 @@ static char *parse_address(JsonObject *vacancy_object)
 		else
 		{
 			address_object = json_node_get_object(address_node);
-			city = parse_string_member(address_object, "city");
-			street = parse_string_member(address_object, "street");
-			building = parse_string_member(address_object, "building");
-			address = g_strconcat(city, street, building, NULL);
-			g_free(city);
-			g_free(street);
-			g_free(building);
+			address = parse_address_object(address_object);
 		}
 	}
+	return address;
+}
+
+static char *parse_address_object(JsonObject *address_object)
+{
+	char	*address;
+	char	*city;
+	char	*street;
+	char	*building;
+
+	city = parse_string_member(address_object, "city");
+	street = parse_string_member(address_object, "street");
+	building = parse_string_member(address_object, "building");
+	if (!g_strcmp0(city, ""))
+		address = g_strdup("-");
+	else
+		address = g_strjoin(", ", city, street, building, NULL);
+	g_free(city);
+	g_free(street);
+	g_free(building);
+
 	return address;
 }
 
 static char *parse_int_member(JsonObject *object, const char *member)
 {
 	if (!json_object_has_member(object, member))
-		return g_strdup(" ");
+		return g_strdup("");
 	if (json_node_is_null(json_object_get_member(object, member)))
-		return g_strdup(" ");
+		return g_strdup("");
 	return g_strdup_printf("%lu", json_object_get_int_member(object, member));
 }
 
 static char *parse_string_member(JsonObject *object, const char *member)
 {
 	if (!json_object_has_member(object, member))
-		return g_strdup(" ");
+		return g_strdup("");
 	if (json_node_is_null(json_object_get_member(object, member)))
-		return g_strdup(" ");
+		return g_strdup("");
 	return g_strdup(json_object_get_string_member(object, member));
 }

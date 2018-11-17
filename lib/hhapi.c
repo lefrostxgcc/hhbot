@@ -108,7 +108,7 @@ static struct Vacancy create_vacancy(JsonObject *vacancy_object)
 	vacancy.salary_to = salary.to;
 	vacancy.employer_name = parse_employer_name(vacancy_object);
 	vacancy.address = parse_address(vacancy_object);
-	vacancy.info = parse_string_member(vacancy_object, "description");
+	vacancy.info = parse_string_member(vacancy_object, "alternate_url");
 	return vacancy;
 }
 
@@ -203,8 +203,12 @@ static char *parse_address_object(JsonObject *address_object)
 	city = parse_string_member(address_object, "city");
 	street = parse_string_member(address_object, "street");
 	building = parse_string_member(address_object, "building");
-	if (!g_strcmp0(city, ""))
+	if (!g_strcmp0(city, "-"))
 		address = g_strdup("-");
+	else if (!g_strcmp0(street, "-"))
+		address = g_strdup(city);
+	else if (!g_strcmp0(building, "-"))
+		address = g_strjoin(", ", city, street, NULL);
 	else
 		address = g_strjoin(", ", city, street, building, NULL);
 	g_free(city);
@@ -217,17 +221,17 @@ static char *parse_address_object(JsonObject *address_object)
 static char *parse_int_member(JsonObject *object, const char *member)
 {
 	if (!json_object_has_member(object, member))
-		return g_strdup("");
+		return g_strdup("-");
 	if (json_node_is_null(json_object_get_member(object, member)))
-		return g_strdup("");
+		return g_strdup("-");
 	return g_strdup_printf("%lu", json_object_get_int_member(object, member));
 }
 
 static char *parse_string_member(JsonObject *object, const char *member)
 {
 	if (!json_object_has_member(object, member))
-		return g_strdup("");
+		return g_strdup("-");
 	if (json_node_is_null(json_object_get_member(object, member)))
-		return g_strdup("");
+		return g_strdup("-");
 	return g_strdup(json_object_get_string_member(object, member));
 }

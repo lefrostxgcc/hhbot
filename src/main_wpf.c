@@ -3,17 +3,20 @@
 
 #define	PROGRAM_TITLE	"HHBot"
 enum {SPACING = 10, WINDOW_WIDTH = 500, WINDOW_HEIGHT = 400};
-const gchar *headers[] = { "ID", "Name" };
+const gchar *headers[] = { "ID", "Name", "Info" };
 
 static void on_button_search_clicked(GtkWidget *button, gpointer data);
+static void on_button_view_clicked(GtkWidget *button, gpointer data);
 static void setup_tree_view(GtkWidget *tree_view);
 static void add_vacancy_to_store(struct Vacancy *vacancy);
+static void show_message_box(const char *message);
 
+static GtkWidget	*window;
 static GtkWidget	*treeview_vacancies;
 
 int main(int argc, char *argv[])
 {
-	GtkWidget *window, *entry_search, *button_search;
+	GtkWidget *entry_search, *button_search, *button_view;
 	GtkWidget *scrolled_win, *vbox, *hbox;
 	GtkListStore *store;
 	GtkCssProvider *css_provider;
@@ -27,12 +30,12 @@ int main(int argc, char *argv[])
 
 	treeview_vacancies = gtk_tree_view_new();
 	entry_search = gtk_entry_new();
-	button_search = gtk_button_new_with_label("Search");
+	button_search = gtk_button_new_with_label("Поиск");
+	button_view = gtk_button_new_with_label("Инфо");
 
 	setup_tree_view(treeview_vacancies);
 
 	store = gtk_list_store_new(sizeof(headers)/sizeof(headers[0]),
-		G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
 		G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
 
 	gtk_tree_view_set_model(GTK_TREE_VIEW(treeview_vacancies),
@@ -47,6 +50,7 @@ int main(int argc, char *argv[])
 
 	gtk_box_pack_start(GTK_BOX(hbox), entry_search, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(hbox), button_search, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox), button_view, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(vbox), scrolled_win, TRUE, TRUE, 0);
 	
@@ -60,12 +64,17 @@ int main(int argc, char *argv[])
 		GTK_STYLE_PROVIDER_PRIORITY_USER);
 
 	gtk_widget_set_name(button_search, "button_search");
+	gtk_widget_set_name(button_view, "button_view");
 	gtk_widget_set_name(entry_search, "entry_search");
 	gtk_widget_set_name(scrolled_win, "treeview_vacancies");
 
 	g_signal_connect(G_OBJECT(button_search), "clicked",
 						G_CALLBACK(on_button_search_clicked),
 						(gpointer)entry_search);
+
+	g_signal_connect(G_OBJECT(button_view), "clicked",
+						G_CALLBACK(on_button_view_clicked),
+						NULL);
 
 	g_signal_connect(G_OBJECT(window), "destroy",
 						G_CALLBACK(gtk_main_quit), NULL);
@@ -83,7 +92,7 @@ static void setup_tree_view(GtkWidget *tree_view)
 	GtkCellRenderer		*render;
 	GtkTreeSelection	*selection;
 
-	for (int i = 0; i < sizeof(headers)/sizeof(headers[0]); i++)
+	for (int i = 0; i < sizeof(headers)/sizeof(headers[0]) - 1; i++)
 	{
 		render = gtk_cell_renderer_text_new();
 		g_object_set(render, "editable", TRUE, NULL);
@@ -135,5 +144,40 @@ static void add_vacancy_to_store(struct Vacancy *vacancy)
 	gtk_list_store_set(GTK_LIST_STORE(model), &iter,
 		0, vacancy->id,
 		1, vacancy->name,
+		2, vacancy->info,
 		-1);
+}
+
+static void on_button_view_clicked(GtkWidget *button, gpointer data)
+{
+	GtkTreeSelection	*selection;
+	GtkTreeModel		*model;
+	gchar				*url;
+	GtkTreeIter			iter;
+
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview_vacancies));
+	if (gtk_tree_selection_get_selected(selection, &model, &iter))
+	{
+		gtk_tree_model_get(model, &iter, 2, &url, -1);
+		if (!gtk_show_uri_on_window(NULL, url, GDK_CURRENT_TIME, NULL))
+			show_message_box("Невозможно вывести информацию о вакансии");
+		g_free(url);
+	}
+	else
+	{
+		show_message_box("Необходимо выбрать вакансию");
+	}
+}
+
+static void show_message_box(const char *message)
+{
+	GtkWidget *dialog;
+
+	dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL,
+									GTK_MESSAGE_INFO, GTK_BUTTONS_OK,
+									message);
+
+	gtk_window_set_title(GTK_WINDOW(dialog), PROGRAM_TITLE);
+	gtk_dialog_run(GTK_DIALOG(dialog));
+	gtk_widget_destroy(dialog);
 }

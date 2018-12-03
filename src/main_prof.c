@@ -7,6 +7,16 @@ int main(int argc, char *argv[])
 {
 	GtkWidget		*window;
 	GtkCssProvider	*css_provider;
+	GtkWidget		*menu;
+	GtkWidget		*menu_resume;
+	GtkWidget		*menu_root_vacancy;
+	GtkWidget		*menu_root_resume;
+	GtkWidget		*menu_root_test;
+	GtkWidget		*menu_resume_list;
+	GtkWidget		*menu_resume_create;
+	GtkWidget		*menu_resume_root_create;
+	GtkWidget		*menu_resume_create_new;
+	GtkWidget		*vbox;
 
     gtk_init (&argc, &argv);
 
@@ -14,6 +24,33 @@ int main(int argc, char *argv[])
 	gtk_window_set_title(GTK_WINDOW(window), PROGRAM_TITLE);
 	gtk_container_set_border_width(GTK_CONTAINER(window), SPACING);
 	gtk_window_set_default_size(GTK_WINDOW(window), WINDOW_WIDTH, WINDOW_HEIGHT);
+
+	menu = gtk_menu_bar_new();
+	menu_resume = gtk_menu_new();
+	menu_resume_create = gtk_menu_new();
+	menu_root_vacancy = gtk_menu_item_new_with_label("Вакансии");
+	menu_root_resume = gtk_menu_item_new_with_label("Резюме");
+	menu_resume_list = gtk_menu_item_new_with_label("Список");
+	menu_resume_root_create = gtk_menu_item_new_with_label("Создать");
+	menu_resume_create_new = gtk_menu_item_new_with_label("Новое");
+	menu_root_test = gtk_menu_item_new_with_label("Test");
+
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu_resume), menu_resume_list);
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu_resume), menu_resume_root_create);
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu_resume_create),
+		menu_resume_create_new);
+
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_root_resume), menu_resume);
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_resume_root_create),
+		menu_resume_create);
+
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_root_vacancy);
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_root_resume);
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_root_test);
+
+	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, SPACING);
+	gtk_box_pack_start(GTK_BOX(vbox), menu, FALSE, FALSE, 0);
+	gtk_container_add(GTK_CONTAINER(window), vbox);
 
 	css_provider = gtk_css_provider_new();
 	gtk_css_provider_load_from_resource(css_provider, "/hh_prof.css");

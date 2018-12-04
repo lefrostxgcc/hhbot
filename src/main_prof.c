@@ -78,5 +78,31 @@ int main(int argc, char *argv[])
 
 static void on_menubar_item_test_activated()
 {
-	g_message("Test");
+	GtkWidget		*window_test;
+	GtkWidget		*vbox;
+	GtkWidget		*text_view_res;
+	GtkWidget		*entry_search;
+	GtkWidget		*button_search;
+
+    window_test = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	gtk_window_set_title(GTK_WINDOW(window_test), "Test");
+	gtk_container_set_border_width(GTK_CONTAINER(window_test), SPACING);
+	gtk_window_set_modal(GTK_WINDOW(window_test), TRUE);
+
+	text_view_res = gtk_text_view_new();
+	entry_search = gtk_entry_new();
+	button_search = gtk_button_new_with_label("Test");
+
+	gtk_widget_set_halign(button_search, GTK_ALIGN_START);
+
+	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, SPACING);
+	gtk_box_pack_start(GTK_BOX(vbox), text_view_res, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox), entry_search, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox), button_search, FALSE, FALSE, 0);
+	gtk_container_add(GTK_CONTAINER(window_test), vbox);
+
+	g_signal_connect_swapped(G_OBJECT(window_test), "destroy",
+								G_CALLBACK(gtk_widget_destroy), window_test);
+
+    gtk_widget_show_all(window_test);
 }

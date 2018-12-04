@@ -3,6 +3,8 @@
 #define	PROGRAM_TITLE	"HH Professional"
 enum {SPACING = 10, WINDOW_WIDTH = 525, WINDOW_HEIGHT = 350};
 
+static void on_menubar_item_test_activated();
+
 int main(int argc, char *argv[])
 {
 	GtkWidget		*window;
@@ -48,6 +50,9 @@ int main(int argc, char *argv[])
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_root_resume);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_root_test);
 
+	g_signal_connect(G_OBJECT(menu_root_test), "activate",
+						G_CALLBACK(on_menubar_item_test_activated), NULL);
+
 	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 	gtk_box_pack_start(GTK_BOX(vbox), menu, FALSE, FALSE, 0);
 	gtk_container_add(GTK_CONTAINER(window), vbox);
@@ -69,4 +74,9 @@ int main(int argc, char *argv[])
     gtk_main();
 
 	return 0;
+}
+
+static void on_menubar_item_test_activated()
+{
+	g_message("Test");
 }

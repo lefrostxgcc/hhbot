@@ -86,7 +86,9 @@ static void on_menubar_item_test_activated()
 
     window_test = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title(GTK_WINDOW(window_test), "Test");
-	gtk_container_set_border_width(GTK_CONTAINER(window_test), SPACING);
+	gtk_container_set_border_width(GTK_CONTAINER(window_test), SPACING * 2);
+	gtk_window_set_default_size(GTK_WINDOW(window_test),
+		WINDOW_WIDTH, WINDOW_HEIGHT);
 	gtk_window_set_modal(GTK_WINDOW(window_test), TRUE);
 
 	text_view_res = gtk_text_view_new();
@@ -100,6 +102,8 @@ static void on_menubar_item_test_activated()
 	gtk_box_pack_start(GTK_BOX(vbox), entry_search, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(vbox), button_search, FALSE, FALSE, 0);
 	gtk_container_add(GTK_CONTAINER(window_test), vbox);
+
+	gtk_widget_set_name(window_test, "test_window");
 
 	g_signal_connect_swapped(G_OBJECT(window_test), "destroy",
 								G_CALLBACK(gtk_widget_destroy), window_test);

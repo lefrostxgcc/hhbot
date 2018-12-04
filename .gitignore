@@ -9,3 +9,6 @@ m4/
 autoscan.log
 configure.scan
 *~
+src/resources.c
+src/resources_prof.c
+src/resources_wpf.c

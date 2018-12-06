@@ -102,6 +102,8 @@ static void on_menubar_item_test_activated()
 	scrolls = gtk_scrolled_window_new(NULL, NULL);
 	text_view_res = gtk_text_view_new();
 	entry_search = gtk_entry_new();
+	gtk_entry_set_text(GTK_ENTRY(entry_search),
+		"http://api.hh.ru/vacancies?text=");
 	button_search = gtk_button_new_with_label("Test");
 	text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view_res));
 
@@ -126,12 +128,13 @@ static void on_menubar_item_test_activated()
 static void on_button_search_clicked(GtkWidget *button, gpointer data)
 {
 	struct VacancyArray	vacancies;
-	const char			*entry_text;
-	char				*url;
+	const char			*url;
 	char				*request;
 
-	entry_text = gtk_entry_get_text(GTK_ENTRY(data));
-	url = g_strconcat("http://api.hh.ru/vacancies?text=", entry_text, NULL);
+	if (gtk_entry_get_text_length(GTK_ENTRY(data)) == 0)
+		return;
+
+	url = gtk_entry_get_text(GTK_ENTRY(data));
 
 	request = hhapi_get_request(url);
 	vacancies = hhapi_parse_json_items(request);
@@ -140,7 +143,6 @@ static void on_button_search_clicked(GtkWidget *button, gpointer data)
 
 	hhapi_free_vacancies(&vacancies);
 	g_free(request);
-	g_free(url);
 }
 
 static void show_vacancies_on_text_view(struct VacancyArray *vacancies)

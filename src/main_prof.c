@@ -112,9 +112,6 @@ static void on_menubar_item_test_activated()
 						G_CALLBACK(on_button_search_clicked),
 						(gpointer)entry_search);
 
-	g_signal_connect_swapped(G_OBJECT(window_test), "destroy",
-								G_CALLBACK(gtk_widget_destroy), window_test);
-
     gtk_widget_show_all(window_test);
 }
 

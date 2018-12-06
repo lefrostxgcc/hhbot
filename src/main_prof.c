@@ -9,6 +9,7 @@ static void on_button_search_clicked(GtkWidget *button, gpointer data);
 static void show_vacancies_on_text_view(struct VacancyArray *vacancies);
 static void append_vacancy_on_text_view(struct Vacancy *vacancy);
 static void clear_text_buffer(GtkTextBuffer *buffer);
+static void append_text_on_buffer(GtkTextBuffer *buffer, const char *text);
 
 static GtkTextBuffer	*text_buffer;
 
@@ -157,16 +158,18 @@ static void show_vacancies_on_text_view(struct VacancyArray *vacancies)
 
 static void append_vacancy_on_text_view(struct Vacancy *vacancy)
 {
-	gchar			*line;
+	gchar			*text;
 	GtkTextIter		iter_end;
 
-	line = g_strdup_printf(
-			"id: %s\tвакансия: %s\tот: %s\tдо: %s\n",
+	text = g_strdup_printf(
+			"id: %s\nВакансия: %s\nЗарплата: от %s до %s\n"
+			"Наниматель: %s\nАдрес: %s\nurl: %s\n"
+			"-------------------------------------------------------------\n",
 			vacancy->id, vacancy->name,
-			vacancy->salary_from, vacancy->salary_to);
-	gtk_text_buffer_get_end_iter(text_buffer, &iter_end);
-	gtk_text_buffer_insert(text_buffer, &iter_end, line, -1);
-	g_free(line);
+			vacancy->salary_from, vacancy->salary_to,
+			vacancy->employer_name, vacancy->address, vacancy->info);
+	append_text_on_buffer(text_buffer, text);
+	g_free(text);
 }
 
 static void clear_text_buffer(GtkTextBuffer *buffer)
@@ -176,4 +179,12 @@ static void clear_text_buffer(GtkTextBuffer *buffer)
 
 	gtk_text_buffer_get_bounds(buffer, &iter_start, &iter_end);
 	gtk_text_buffer_delete(buffer, &iter_start, &iter_end);
+}
+
+static void append_text_on_buffer(GtkTextBuffer *buffer, const char *text)
+{
+	GtkTextIter		iter_end;
+
+	gtk_text_buffer_get_end_iter(text_buffer, &iter_end);
+	gtk_text_buffer_insert(text_buffer, &iter_end, text, -1);
 }

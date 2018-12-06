@@ -86,6 +86,7 @@ static void on_menubar_item_test_activated()
 {
 	GtkWidget		*window_test;
 	GtkWidget		*vbox;
+	GtkWidget		*scrolls;
 	GtkWidget		*text_view_res;
 	GtkWidget		*entry_search;
 	GtkWidget		*button_search;
@@ -97,6 +98,7 @@ static void on_menubar_item_test_activated()
 		WINDOW_WIDTH, WINDOW_HEIGHT);
 	gtk_window_set_modal(GTK_WINDOW(window_test), TRUE);
 
+	scrolls = gtk_scrolled_window_new(NULL, NULL);
 	text_view_res = gtk_text_view_new();
 	entry_search = gtk_entry_new();
 	button_search = gtk_button_new_with_label("Test");
@@ -104,8 +106,9 @@ static void on_menubar_item_test_activated()
 
 	gtk_widget_set_halign(button_search, GTK_ALIGN_START);
 
+	gtk_container_add(GTK_CONTAINER(scrolls), text_view_res);
 	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, SPACING);
-	gtk_box_pack_start(GTK_BOX(vbox), text_view_res, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox), scrolls, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(vbox), entry_search, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(vbox), button_search, FALSE, FALSE, 0);
 	gtk_container_add(GTK_CONTAINER(window_test), vbox);

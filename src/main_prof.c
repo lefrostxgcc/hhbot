@@ -7,6 +7,7 @@ enum {SPACING = 10, WINDOW_WIDTH = 525, WINDOW_HEIGHT = 350};
 static void on_menubar_item_test_activated();
 static void on_button_search_clicked(GtkWidget *button, gpointer data);
 static void show_vacancies_on_text_view(struct VacancyArray *vacancies);
+static void append_vacancy_on_text_view(struct Vacancy *vacancy);
 
 static GtkTextBuffer	*text_buffer;
 
@@ -140,18 +141,46 @@ static void on_button_search_clicked(GtkWidget *button, gpointer data)
 
 static void show_vacancies_on_text_view(struct VacancyArray *vacancies)
 {
-	GtkTextIter		iter_end;
 	int				i;
-	gchar			*line;
 
 	for (i = 0; i < vacancies->size; i++)
-	{
-		line = g_strdup_printf(
-			"id: %s name: %s, salary_from: %s, salary_to: %s\n",
-			vacancies->data[i].id, vacancies->data[i].name,
-			vacancies->data[i].salary_from, vacancies->data[i].salary_to);
-		gtk_text_buffer_get_end_iter(text_buffer, &iter_end);
-		gtk_text_buffer_insert(text_buffer, &iter_end, line, -1);
-		g_free(line);
-	}
+		append_vacancy_on_text_view(vacancies->data + i);
 }
+
+static void append_vacancy_on_text_view(struct Vacancy *vacancy)
+{
+	gchar			*line;
+	GtkTextIter		iter_end;
+
+	line = g_strdup_printf(
+			"id: %s\tвакансия: %s\tот: %s\tдо: %s\n",
+			vacancy->id, vacancy->name,
+			vacancy->salary_from, vacancy->salary_to);
+	gtk_text_buffer_get_end_iter(text_buffer, &iter_end);
+	gtk_text_buffer_insert(text_buffer, &iter_end, line, -1);
+	g_free(line);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

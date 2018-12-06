@@ -12,10 +12,10 @@ hhbot_wpf_LDFLAGS= $(PKGGTK_LDFLAGS) $(AM_LDFLAGS)
 hhbot_wpf_LDADD = ../lib/libhhapi.la @PKGGTK_LIBS@
 
 hh_prof_SOURCES = main_prof.c resources_prof.c
-hh_prof_CPPFLAGS = @PKGGTK_CFLAGS@ $(AM_CPPFLAGS)
+hh_prof_CPPFLAGS = -I$(top_srcdir)/lib @PKGGTK_CFLAGS@ $(AM_CPPFLAGS)
 hh_prof_CFLAGS = $(AM_CFLAGS)
 hh_prof_LDFLAGS= $(PKGGTK_LDFLAGS) $(AM_LDFLAGS)			 
-hh_prof_LDADD = @PKGGTK_LIBS@ 
+hh_prof_LDADD = ../lib/libhhapi.la @PKGGTK_LIBS@ 
 
 EXTRA_DIST = resources_wpf.xml wpf.css resources_prof.xml hh_prof.css 
 

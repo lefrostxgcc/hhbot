@@ -1,4 +1,5 @@
 #include <gtk/gtk.h>
+#include <hhapi.h>
 
 #define	PROGRAM_TITLE	"HH Professional"
 enum {SPACING = 10, WINDOW_WIDTH = 525, WINDOW_HEIGHT = 350};

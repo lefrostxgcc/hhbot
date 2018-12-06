@@ -8,7 +8,7 @@ static void on_menubar_item_test_activated();
 static void on_button_search_clicked(GtkWidget *button, gpointer data);
 static void show_vacancies_on_text_view(struct VacancyArray *vacancies);
 
-static GtkWidget	*text_view_res;
+static GtkTextBuffer	*text_buffer;
 
 int main(int argc, char *argv[])
 {
@@ -85,6 +85,7 @@ static void on_menubar_item_test_activated()
 {
 	GtkWidget		*window_test;
 	GtkWidget		*vbox;
+	GtkWidget		*text_view_res;
 	GtkWidget		*entry_search;
 	GtkWidget		*button_search;
 
@@ -98,6 +99,7 @@ static void on_menubar_item_test_activated()
 	text_view_res = gtk_text_view_new();
 	entry_search = gtk_entry_new();
 	button_search = gtk_button_new_with_label("Test");
+	text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view_res));
 
 	gtk_widget_set_halign(button_search, GTK_ALIGN_START);
 
@@ -138,12 +140,9 @@ static void on_button_search_clicked(GtkWidget *button, gpointer data)
 
 static void show_vacancies_on_text_view(struct VacancyArray *vacancies)
 {
-	GtkTextBuffer	*text_buffer;
 	GtkTextIter		iter_end;
 	int				i;
 	gchar			*line;
-
-	text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view_res));
 
 	for (i = 0; i < vacancies->size; i++)
 	{

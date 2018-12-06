@@ -5,6 +5,7 @@
 enum {SPACING = 10, WINDOW_WIDTH = 525, WINDOW_HEIGHT = 350};
 
 static void on_menubar_item_test_activated();
+static void on_button_search_clicked(GtkWidget *button, gpointer data);
 
 int main(int argc, char *argv[])
 {
@@ -106,8 +107,17 @@ static void on_menubar_item_test_activated()
 
 	gtk_widget_set_name(window_test, "test_window");
 
+	g_signal_connect(G_OBJECT(button_search), "clicked",
+						G_CALLBACK(on_button_search_clicked),
+						(gpointer)entry_search);
+
 	g_signal_connect_swapped(G_OBJECT(window_test), "destroy",
 								G_CALLBACK(gtk_widget_destroy), window_test);
 
     gtk_widget_show_all(window_test);
+}
+
+static void on_button_search_clicked(GtkWidget *button, gpointer data)
+{
+	g_message("on_button_search_clicked");
 }

@@ -8,6 +8,8 @@ static void on_menubar_item_test_activated();
 static void on_button_search_clicked(GtkWidget *button, gpointer data);
 static void show_vacancies_on_text_view(struct VacancyArray *vacancies);
 
+static GtkWidget	*text_view_res;
+
 int main(int argc, char *argv[])
 {
 	GtkWidget		*window;
@@ -83,7 +85,6 @@ static void on_menubar_item_test_activated()
 {
 	GtkWidget		*window_test;
 	GtkWidget		*vbox;
-	GtkWidget		*text_view_res;
 	GtkWidget		*entry_search;
 	GtkWidget		*button_search;
 
@@ -137,5 +138,21 @@ static void on_button_search_clicked(GtkWidget *button, gpointer data)
 
 static void show_vacancies_on_text_view(struct VacancyArray *vacancies)
 {
-	g_message("show_vacancies_on_text_view");
+	GtkTextBuffer	*text_buffer;
+	GtkTextIter		iter_end;
+	int				i;
+	gchar			*line;
+
+	text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view_res));
+
+	for (i = 0; i < vacancies->size; i++)
+	{
+		line = g_strdup_printf(
+			"id: %s name: %s, salary_from: %s, salary_to: %s\n",
+			vacancies->data[i].id, vacancies->data[i].name,
+			vacancies->data[i].salary_from, vacancies->data[i].salary_to);
+		gtk_text_buffer_get_end_iter(text_buffer, &iter_end);
+		gtk_text_buffer_insert(text_buffer, &iter_end, line, -1);
+		g_free(line);
+	}
 }

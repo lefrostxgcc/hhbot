@@ -8,6 +8,7 @@ static void on_menubar_item_test_activated();
 static void on_button_search_clicked(GtkWidget *button, gpointer data);
 static void show_vacancies_on_text_view(struct VacancyArray *vacancies);
 static void append_vacancy_on_text_view(struct Vacancy *vacancy);
+static void clear_text_buffer(GtkTextBuffer *buffer);
 
 static GtkTextBuffer	*text_buffer;
 
@@ -146,6 +147,8 @@ static void show_vacancies_on_text_view(struct VacancyArray *vacancies)
 {
 	int				i;
 
+	clear_text_buffer(text_buffer);
+
 	for (i = 0; i < vacancies->size; i++)
 		append_vacancy_on_text_view(vacancies->data + i);
 }
@@ -164,26 +167,11 @@ static void append_vacancy_on_text_view(struct Vacancy *vacancy)
 	g_free(line);
 }
 
+static void clear_text_buffer(GtkTextBuffer *buffer)
+{
+	GtkTextIter		iter_start;
+	GtkTextIter		iter_end;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	gtk_text_buffer_get_bounds(buffer, &iter_start, &iter_end);
+	gtk_text_buffer_delete(buffer, &iter_start, &iter_end);
+}

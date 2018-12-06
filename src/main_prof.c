@@ -6,6 +6,7 @@ enum {SPACING = 10, WINDOW_WIDTH = 525, WINDOW_HEIGHT = 350};
 
 static void on_menubar_item_test_activated();
 static void on_button_search_clicked(GtkWidget *button, gpointer data);
+static void show_vacancies_on_text_view(struct VacancyArray *vacancies);
 
 int main(int argc, char *argv[])
 {
@@ -119,5 +120,25 @@ static void on_menubar_item_test_activated()
 
 static void on_button_search_clicked(GtkWidget *button, gpointer data)
 {
-	g_message("on_button_search_clicked");
+	struct VacancyArray	vacancies;
+	const char			*entry_text;
+	char				*url;
+	char				*request;
+
+	entry_text = gtk_entry_get_text(GTK_ENTRY(data));
+	url = g_strconcat("http://api.hh.ru/vacancies?text=", entry_text, NULL);
+
+	request = hhapi_get_request(url);
+	vacancies = hhapi_parse_json_items(request);
+
+	show_vacancies_on_text_view(&vacancies);
+
+	hhapi_free_vacancies(&vacancies);
+	g_free(request);
+	g_free(url);
+}
+
+static void show_vacancies_on_text_view(struct VacancyArray *vacancies)
+{
+	g_message("show_vacancies_on_text_view");
 }
